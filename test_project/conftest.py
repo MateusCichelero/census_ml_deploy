@@ -38,7 +38,7 @@ def cat_features():
       "race",
       "sex",
       "native-country",
-  ]
+    ]
 
     return cat_features
 

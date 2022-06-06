@@ -16,9 +16,9 @@ def val_model(test_df, cat_features, path):
 
     """
     # load model and encoder
-    model = load(f"{root_dir}/model/model.joblib")
-    encoder = load(f"{root_dir}/model/encoder.joblib")
-    lb = load(f"{root_dir}/model/lb.joblib")
+    model = load(f"{path}/model/model.joblib")
+    encoder = load(f"{path}/model/encoder.joblib")
+    lb = load(f"{path}/model/lb.joblib")
 
     validate_on_slices(
         model,

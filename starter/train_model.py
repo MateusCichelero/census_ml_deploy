@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from .ml.model import train_model
 from .ml.data import process_data
 
+
 def split_data(path):
     """
     Loads data in path and returns train and test splits
@@ -48,7 +49,8 @@ def train_persist_model(path, train_data):
     ]
 
     x_train, y_train, encoder, lb = process_data(
-        train_data, categorical_features=cat_features, label="salary", training=True
+        train_data, categorical_features=cat_features,
+        label="salary", training=True
     )
     # train model
     model = train_model(x_train, y_train)

@@ -1,0 +1,4 @@
+outs:
+- md5: 94318a20406f508a645b6325f79ab4ab
+  size: 6723
+  path: slice_output.txt

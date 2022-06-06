@@ -1,4 +1,4 @@
-from starter.inferance import run_inference
+from starter.inference import run_inference
 
 
 def test_run_inference_low(inference_data_low, cat_features):

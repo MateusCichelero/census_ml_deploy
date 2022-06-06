@@ -4,6 +4,7 @@ from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestClassifier
+from .data import process_data
 
 
 # Optional: implement hyperparameter tuning.
@@ -34,7 +35,8 @@ def train_model(X_train, y_train):
 
 def compute_model_metrics(y, preds):
     """
-    Validates the trained machine learning model using precision, recall, and F1.
+    Validates the trained machine learning model using precision, recall,
+    and F1.
 
     Inputs
     ------
@@ -54,14 +56,14 @@ def compute_model_metrics(y, preds):
     return precision, recall, fbeta
 
 
-def inference(model, X):
+def inference(model, x):
     """ Run model inferences and return the predictions.
 
     Inputs
     ------
     model : RandomForestClassifier
         Trained machine learning model.
-    X : np.array
+    x : np.array
         Data used for prediction.
     Returns
     -------
@@ -75,7 +77,8 @@ def inference(model, X):
 def validate_on_slices(model, encoder, categorical_features,
                        lb, path, test_data):
     """
-    Compute validation metrics for each categorical element inside a categorical feature
+    Compute validation metrics for each categorical element inside a
+    categorical feature
     Parameters
     ----------
     model: RandomForestClassifier
@@ -95,7 +98,7 @@ def validate_on_slices(model, encoder, categorical_features,
     -------
 
     """
-    with open(f'{root_path}/model/slice_output.txt', 'w') as file:
+    with open(f'{path}/model/slice_output.txt', 'w') as file:
         for category in categorical_features:
             for categorical_element in test_data[category].unique():
                 temp_df = test_data[test_data[category] == categorical_element]
@@ -110,7 +113,8 @@ def validate_on_slices(model, encoder, categorical_features,
                 prc, rcl, fb = compute_model_metrics(y_test, y_pred)
 
                 metric_info = "[%s]-[%s] Precision: %s " \
-                              "Recall: %s FBeta: %s" % (category, categorical_element,
+                              "Recall: %s FBeta: %s" % (category,
+                                                        categorical_element,
                                                         prc, rcl, fb)
                 logging.info(metric_info)
                 file.write(metric_info + '\n')

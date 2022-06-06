@@ -3,7 +3,7 @@ from starter.train_model import split_data, train_persist_model
 
 
 def test_split_data():
-    train_df, test_df = split_data(root_path='./')
+    train_df, test_df = split_data(path='./')
 
     assert train_df.shape[0] > 0
     assert train_df.shape[1] == 12

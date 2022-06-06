@@ -1,4 +1,9 @@
+import logging
+import numpy as np
 from sklearn.metrics import fbeta_score, precision_score, recall_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
 
 
 # Optional: implement hyperparameter tuning.
@@ -17,8 +22,14 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
-
-    pass
+    # Applying cv to log the mean and std accuracy scores
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+    model = RandomForestClassifier(n_estimators=100)
+    model.fit(X_train, y_train)
+    scores = cross_val_score(model, X_train, y_train, scoring='accuracy',
+                             cv=cv, n_jobs=-1)
+    logging.info('Accuracy: %.3f (%.3f)' % (np.mean(scores), np.std(scores)))
+    return model
 
 
 def compute_model_metrics(y, preds):
@@ -48,7 +59,7 @@ def inference(model, X):
 
     Inputs
     ------
-    model : ???
+    model : RandomForestClassifier
         Trained machine learning model.
     X : np.array
         Data used for prediction.
@@ -57,4 +68,49 @@ def inference(model, X):
     preds : np.array
         Predictions from the model.
     """
-    pass
+    preds = model.predict(x)
+    return preds
+
+
+def validate_on_slices(model, encoder, categorical_features,
+                       lb, path, test_data):
+    """
+    Compute validation metrics for each categorical element inside a categorical feature
+    Parameters
+    ----------
+    model: RandomForestClassifier
+        Trained machine learning model.
+    encoder: sklearn.preprocessing._encoders.OneHotEncoder
+        Trained OneHotEncoder
+    categorical_features: list[str]
+        List containing the names of the categorical features (default=[])
+    lb: sklearn.preprocessing._label.LabelBinarizer
+        Trained LabelBinarizer
+    path: str
+        Path to the root
+    test_data: np.array
+        Data used for validation on slices.
+
+    Returns
+    -------
+
+    """
+    with open(f'{root_path}/model/slice_output.txt', 'w') as file:
+        for category in categorical_features:
+            for categorical_element in test_data[category].unique():
+                temp_df = test_data[test_data[category] == categorical_element]
+
+                x_test, y_test, _, _ = process_data(
+                    temp_df,
+                    categorical_features=categorical_features, training=False,
+                    label="salary", encoder=encoder, lb=lb)
+
+                y_pred = model.predict(x_test)
+
+                prc, rcl, fb = compute_model_metrics(y_test, y_pred)
+
+                metric_info = "[%s]-[%s] Precision: %s " \
+                              "Recall: %s FBeta: %s" % (category, categorical_element,
+                                                        prc, rcl, fb)
+                logging.info(metric_info)
+                file.write(metric_info + '\n')
